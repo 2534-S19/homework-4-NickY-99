@@ -10,19 +10,36 @@ int main(void)
 
 
     // Stops the Watchdog timer.
+    WDT_A_holdTimer();
     initBoard();
     // TODO: Declare a UART config struct as defined in uart.h.
     //       To begin, configure the UART for 9600 baud, 8-bit payload (LSB first), no parity, 1 stop bit.
-
+    eUSCI_UART_ConfigV1 uartConfig = {
+        uint_fast8_t selectClockSource;
+        uint_fast16_t clockPrescalar;
+        uint_fast8_t firstModReg;
+        uint_fast8_t secondModReg;
+        uint_fast8_t parity;
+        uint_fast16_t msborLsbFirst;
+        uint_fast16_t numberofStopBits;
+        uint_fast16_t uartMode;
+        uint_fast8_t overSampling;
+        uint_fast16_t dataLength;
+    };
 
     // TODO: Make sure Tx AND Rx pins of EUSCI_A0 work for UART and not as regular GPIO pins.
+    GPIO_setAsPeripheralModuleFunctionInputPin(GPIO_PORT_P1,
+        GPIO_PIN2 , GPIO_PRIMARY_MODULE_FUNCTION);
 
-
+    GPIO_setAsPeripheralModuleFunctionOutputPin(
+            GPIO_PORT_P1, GPIO_PIN3,
+            GPIO_PRIMARY_MODULE_FUNCTION);
     // TODO: Initialize EUSCI_A0
+    UART_initModule(EUSCI_A0_BASE, &uartConfig);
 
 
     // TODO: Enable EUSCI_A0
-
+    UART_enableModule(EUSCI_A0_BASE);
 
     while(1)
     {
@@ -51,6 +68,7 @@ void initBoard()
 // TODO: FSM for detecting character sequence.
 bool charFSM(char rChar)
 {
+    //enum
     bool finished = false;
 
 
